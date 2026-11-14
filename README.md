@@ -122,7 +122,7 @@ dotnet run --project RoundTableApp
 
 [MIT](LICENSE) - Copyright (c) 2026 bagdau.
 
-## Авторы и участники / Авторлар мен қатысушылар
+## КОМАНДНАЯ ИССЛЕДОВАНИЕ / КОМАНДАЛЫҚ ЗЕРТТЕУ
 
 * [bagdau](https://github.com/bagdau) - автор
-* [muhammedzhann](https://github.com/muhammedzhann) - участник / қатысушы
+* [muhammedzhann](https://github.com/muhammedzhann) - со-автор
