@@ -37,6 +37,14 @@ public class BoardPanel : Panel
         return new PointF(r.X + Cell / 2f, r.Y + Cell / 2f);
     }
 
+    // saves the board with the numbers and the path as a PNG picture
+    public void SaveImage(string path)
+    {
+        using var bmp = new Bitmap(Width, Height);
+        DrawToBitmap(bmp, new Rectangle(0, 0, Width, Height));
+        bmp.Save(path, System.Drawing.Imaging.ImageFormat.Png);
+    }
+
     protected override void OnMouseClick(MouseEventArgs e)
     {
         base.OnMouseClick(e);

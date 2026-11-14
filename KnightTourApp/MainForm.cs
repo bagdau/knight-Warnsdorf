@@ -15,6 +15,7 @@ public class MainForm : Form
     readonly TextBox txtResult = new TextBox();
     readonly Button btnCopy = new Button();
     readonly Button btnSave = new Button();
+    readonly Button btnImage = new Button();
     readonly System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
     readonly Random rnd = new Random();
 
@@ -54,7 +55,11 @@ public class MainForm : Form
         trackSpeed.TickStyle = TickStyle.None;
         trackSpeed.ValueChanged += (s, e) => timer.Interval = SpeedToInterval();
 
-        top.Controls.AddRange(new Control[] { btnRandom, chkAnim, chkPath, lblSpeed, trackSpeed });
+        StyleButton(btnImage, "Суретті сақтау (PNG)", Color.FromArgb(60, 60, 60));
+        btnImage.SetBounds(590, 8, 170, 30);
+        btnImage.Click += (s, e) => SaveBoardImage();
+
+        top.Controls.AddRange(new Control[] { btnRandom, chkAnim, chkPath, lblSpeed, trackSpeed, btnImage });
 
         // board
         board.Location = new Point(0, top.Height);
@@ -185,6 +190,18 @@ public class MainForm : Form
             "Бастау (1): " + start + "   Соңы (64): " + end +
             "   →   64-ші қадамнан " + start + " клеткасына ат жүрісімен қайтады.\n" +
             "64 клетка, әрқайсысы 1 рет. Тексеру: " + (ok ? "OK" : "ҚАТЕ");
+    }
+
+    void SaveBoardImage()
+    {
+        if (board.Tour == null) { lblStatus.Text = "Алдымен бастапқы клетканы басыңыз."; return; }
+        var st = board.Tour.Order[1];
+        using var dlg = new SaveFileDialog
+        {
+            Filter = "PNG image (*.png)|*.png",
+            FileName = "knight_tour_" + KnightTour.Name(st.x, st.y) + ".png"
+        };
+        if (dlg.ShowDialog() == DialogResult.OK) board.SaveImage(dlg.FileName);
     }
 
     void SaveResult()
