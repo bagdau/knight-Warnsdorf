@@ -1,70 +1,128 @@
 # knight-Warnsdorf
 
-Two small Windows Forms programs (C#, .NET) that solve classic **Hamiltonian cycle** problems from graph theory and draw the result:
+Русский | [Қазақша](#қазақша)
 
-| Program | Problem |
+---
+
+## Русский
+
+Две небольшие программы на C# (.NET, Windows Forms), которые решают классические задачи теории графов на **гамильтонов цикл** и рисуют результат.
+
+| Программа | Задача |
 |---|---|
-| [`KnightTourApp`](KnightTourApp) | **Closed knight's tour.** The knight starts on *any* square of a chessboard you click, visits all 64 squares exactly once and returns to the square it started from. |
-| [`RoundTableApp`](RoundTableApp) | **Round table.** Some of the guests are friends. Can everybody sit around a round table so that both neighbours of every person are his/her friends? |
+| [`KnightTourApp`](KnightTourApp) | **Замкнутый обход конём.** Конь начинает с *любой* клетки шахматной доски (её выбирает пользователь кликом), обходит все 64 клетки ровно по одному разу и возвращается в начальную клетку. |
+| [`RoundTableApp`](RoundTableApp) | **Круглый стол.** Среди гостей есть друзья. Можно ли рассадить всех за круглым столом так, чтобы с обеих сторон от каждого сидели его друзья? |
 
-Both problems are the same question: *does the graph have a Hamiltonian cycle?* (chessboard squares / people are vertices, knight moves / friendships are edges).
+Обе задачи сводятся к одному вопросу: *есть ли в графе гамильтонов цикл?* (клетки доски или люди - вершины, ходы коня или дружба - рёбра).
 
-## Requirements
+### Требования
 
 * Windows
-* [.NET 10 SDK](https://dotnet.microsoft.com/download) (the projects target `net10.0-windows`)
+* [.NET 10 SDK](https://dotnet.microsoft.com/download) (проекты используют `net10.0-windows`)
 
-## Run
+### Запуск
 
 ```bash
 dotnet run --project KnightTourApp
 dotnet run --project RoundTableApp
 ```
 
-## KnightTourApp
+### KnightTourApp
 
-Click any square (or press **Random start**). The knight starts there, goes through all 64 squares and the last square is one knight move away from the start, so the knight can jump back home.
+Кликните по любой клетке (или нажмите **«Кездейсоқ бастау»** - случайный старт). Конь начнёт с неё, обойдёт все 64 клетки, а последняя клетка будет отделена от начальной одним ходом коня, поэтому конь может вернуться домой.
 
-* green square = start (1), blue square = move 64, dashed green arrow = the way back home
-* animation (with speed control), optional path lines
-* the result panel prints the start, the end, the whole route (`1 E4, 2 G5, ...`) and a check; the route can be copied or saved to a `.txt` file
+* зелёная клетка - старт (1), синяя клетка - 64-й ход, зелёная пунктирная стрелка - возвращение домой;
+* анимация (с регулировкой скорости), линии пути можно включать и выключать;
+* панель результата выводит старт, финиш, весь маршрут (`1 E4, 2 G5, ...`) и проверку; маршрут можно скопировать или сохранить в `.txt`.
 
-**Algorithm** (`KnightTourApp/KnightTour.cs`) - backtracking search ordered by **Warnsdorff's rule**:
+**Алгоритм** (`KnightTourApp/KnightTour.cs`) - перебор с возвратом (backtracking) с упорядочиванием по **правилу Варнсдорфа**:
 
-1. Try first the next square that has the *fewest* free onward moves (hard-to-reach squares are visited early).
-2. If the knight gets stuck, undo the last move and try another one (backtracking).
-3. Prune a branch as soon as the start square has no free neighbour left (there would be no way back).
-4. After square 64, accept the tour only if it is one knight move away from the start. `Check()` verifies the whole result.
+1. Сначала пробуем клетку, из которой остаётся *меньше всего* свободных ходов (труднодоступные клетки посещаем раньше).
+2. Если конь зашёл в тупик, отменяем последний ход и пробуем другой (возврат).
+3. Ветку отсекаем сразу, если у начальной клетки не осталось свободных соседей (вернуться уже невозможно).
+4. После 64-й клетки обход принимается, только если она на расстоянии одного хода коня от старта. Метод `Check()` проверяет весь результат.
 
-Why *any* start works: a closed tour is a cycle - it has no beginning, so it can be walked from every square. The program searches again for every chosen start and verifies the result.
+Почему подходит *любая* стартовая клетка: замкнутый обход - это цикл, у него нет начала, поэтому его можно пройти с любой клетки. Программа ищет обход заново для каждого выбранного старта и проверяет результат.
 
-During development the solver found a verified closed tour from **all 64** start squares (worst case 105,724 tried moves, about 0.1 s for all 64 starts together).
+В ходе разработки решатель нашёл проверенный замкнутый обход из **всех 64** стартовых клеток (в худшем случае 105 724 пробных хода, около 0,1 с на все 64 старта вместе).
 
-## RoundTableApp
+### RoundTableApp
 
-Choose the number of people (3-12) and click two people to add or remove a friendship. The program tells at once whether everybody can be seated, draws the table with the seating order and, if it is impossible, explains why.
+Выберите число людей (3-12) и кликайте по двум людям, чтобы добавить или убрать дружбу. Программа сразу сообщает, можно ли всех рассадить, рисует стол с порядком рассадки, а если нельзя - объясняет почему.
 
-**Theory** (`RoundTableApp/Seating.cs`):
+**Теория** (`RoundTableApp/Seating.cs`):
 
-* Necessary: everybody needs at least 2 friends, and the group must stay connected when any single person is removed.
-* **Dirac's theorem** (sufficient): `n >= 3` and every person has at least `n/2` friends.
-* **Ore's theorem** (sufficient): `n >= 3` and for every two people who are *not* friends the sum of their numbers of friends is at least `n`.
-* The sufficient conditions are not necessary: the program finds a seating by an exact subset dynamic programming search (Held-Karp), so it finds one whenever one exists.
+* Необходимо: у каждого не меньше 2 друзей, и группа остаётся связной при удалении любого одного человека.
+* **Теорема Дирака** (достаточное условие): `n >= 3`, и у каждого не меньше `n/2` друзей.
+* **Теорема Оре** (достаточное условие): `n >= 3`, и для любых двух людей, которые *не* друзья, сумма чисел их друзей не меньше `n`.
+* Достаточные условия не являются необходимыми, поэтому программа ищет рассадку точным перебором по подмножествам (динамическое программирование, метод Хелда-Карпа) и находит её всякий раз, когда она существует.
 
-The search was compared with brute force on 20,000 random friendship graphs (no mismatches), and every graph satisfying Dirac's or Ore's condition was seated. These checks were run as throw-away scripts during development and are not part of the repository.
+Поиск сравнивали с полным перебором на 20 000 случайных графов дружбы (расхождений нет), и каждый граф, удовлетворяющий условию Дирака или Оре, был рассажен. Эти проверки выполнялись одноразовыми скриптами во время разработки и в репозиторий не входят.
 
-## Кіріспе (Қазақша)
+---
 
-Екі бағдарлама да графтағы **Гамильтон циклін** іздейді.
+## Қазақша
 
-* **KnightTourApp** - тақтадағы кез келген клетканы басасыз, ат сол клеткадан бастап 64 клетканы бір реттен аралап, **бастапқы клеткаға қайтады**. Алгоритм: қайтып оралу (backtracking) + Варнсдорф ережесі.
-* **RoundTableApp** - дөңгелек үстелде әр адамның екі жағында да оның досы отыра ала ма? Бағдарлама жауабын, отыру ретін және (болмаса) себебін көрсетеді. Дирак және Оре теоремаларының шарттары тексеріледі.
+Графтар теориясындағы классикалық **Гамильтон циклі** есептерін шешіп, нәтижесін сурет ретінде көрсететін C# (.NET, Windows Forms) тілінде жазылған екі шағын бағдарлама.
 
-## License
+| Бағдарлама | Есеп |
+|---|---|
+| [`KnightTourApp`](KnightTourApp) | **Атпен тұйық жүру.** Ат шахмат тақтасының *кез келген* клеткасынан (оны пайдаланушы басып таңдайды) бастап, 64 клетканы бір реттен аралап, бастапқы клеткаға қайтады. |
+| [`RoundTableApp`](RoundTableApp) | **Дөңгелек үстел.** Қонақтардың арасында достар бар. Әр адамның екі жағында да оның досы отыратындай етіп, бәрін дөңгелек үстелге отырғызуға бола ма? |
+
+Екі есеп те бір сұраққа келеді: *графта Гамильтон циклі бар ма?* (тақтаның клеткалары немесе адамдар - төбелер, аттың жүрісі немесе достық - қырлар).
+
+### Талаптар
+
+* Windows
+* [.NET 10 SDK](https://dotnet.microsoft.com/download) (жобалар `net10.0-windows` пайдаланады)
+
+### Іске қосу
+
+```bash
+dotnet run --project KnightTourApp
+dotnet run --project RoundTableApp
+```
+
+### KnightTourApp
+
+Кез келген клетканы басыңыз (немесе **«Кездейсоқ бастау»** түймесін басыңыз). Ат сол клеткадан бастап 64 клетканы аралайды, ал соңғы клетка бастапқы клеткадан бір ат жүрісінде тұрады, сондықтан ат үйіне қайта алады.
+
+* жасыл клетка - бастау (1), көк клетка - 64-ші қадам, жасыл үзік нұсқар - үйге қайту;
+* анимация (жылдамдығын реттеуге болады), жол сызықтарын қосып-өшіруге болады;
+* нәтиже панелі бастауды, соңын, бүкіл жолды (`1 E4, 2 G5, ...`) және тексеру нәтижесін шығарады; жолды көшіріп алуға немесе `.txt` файлына сақтауға болады.
+
+**Алгоритм** (`KnightTourApp/KnightTour.cs`) - **Варнсдорф ережесі** бойынша реттелген қайтып оралу (backtracking) іздеуі:
+
+1. Алдымен бос жалғасы *ең аз* клетканы сынаймыз (қол жеткізу қиын клеткаларды ертерек аралаймыз).
+2. Ат тұйыққа тірелсе, соңғы жүрісті өшіріп, басқасын сынаймыз (қайтып оралу).
+3. Бастапқы клетканың бос көршісі қалмаса, бұл тармақты бірден тоқтатамыз (қайтуға болмайды).
+4. 64-ші клеткадан кейін, ол бастапқы клеткадан бір ат жүрісінде тұрса ғана жол қабылданады. `Check()` әдісі бүкіл нәтижені тексереді.
+
+Неге *кез келген* бастапқы клетка жарайды: тұйық жол - бұл цикл, оның басы жоқ, сондықтан оны кез келген клеткадан бастап өтуге болады. Бағдарлама әр таңдалған бастау үшін жолды жаңадан іздейді және нәтижені тексереді.
+
+Әзірлеу кезінде шешуші **барлық 64** бастапқы клеткадан тексерілген тұйық жол тапты (ең ауыр жағдайда 105 724 сынақ жүріс, 64 бастаудың бәрі бірге шамамен 0,1 с).
+
+### RoundTableApp
+
+Адам санын (3-12) таңдап, достықты қосу немесе өшіру үшін екі адамды басыңыз. Бағдарлама бәрін отырғызуға бола ма, жоқ па, бірден айтады, үстелді отыру ретімен салады, ал болмаса - себебін түсіндіреді.
+
+**Теория** (`RoundTableApp/Seating.cs`):
+
+* Қажетті шарт: әр адамның кемінде 2 досы болуы керек және кез келген бір адамды алып тастағанда топ біртұтас қалуы керек.
+* **Дирак теоремасы** (жеткілікті шарт): `n >= 3` және әр адамның кемінде `n/2` досы бар.
+* **Оре теоремасы** (жеткілікті шарт): `n >= 3` және дос емес кез келген екі адамның достар саны қосындысы кемінде `n`.
+* Жеткілікті шарттар қажетті емес, сондықтан бағдарлама отыруды жиындар бойынша нақты іздеумен (динамикалық бағдарламалау, Хелд-Карп әдісі) табады және ол бар болса, әрқашан табады.
+
+Іздеу 20 000 кездейсоқ достық графында толық іздеумен салыстырылды (айырмашылық жоқ), ал Дирак немесе Оре шартын қанағаттандыратын әр графта отыру табылды. Бұл тексерулер әзірлеу кезінде бір реттік скрипттермен жасалды және репозиторийге кірмейді.
+
+---
+
+## Лицензия
 
 [MIT](LICENSE) - Copyright (c) 2026 bagdau.
 
-## Contributors
+## Авторы и участники / Авторлар мен қатысушылар
 
-* [bagdau](https://github.com/bagdau) - author
-* [muhammedzhann](https://github.com/muhammedzhann) - contributor
+* [bagdau](https://github.com/bagdau) - автор
+* [muhammedzhann](https://github.com/muhammedzhann) - участник / қатысушы
