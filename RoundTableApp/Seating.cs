@@ -98,7 +98,7 @@ public static class Seating
         return count == n - (skip >= 0 ? 1 : 0);
     }
 
-    // simple human explanation why nobody can seat everybody
+    // short explanation (written in Kazakh) why the guests cannot be seated
     public static string WhyNot(bool[,] adj, int n, string[] names)
     {
         if (n < 3) return "Дөңгелек үстелге отыру үшін кемінде 3 адам керек.";
