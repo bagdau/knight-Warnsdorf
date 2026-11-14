@@ -17,7 +17,7 @@
 
 ### Требования
 
-* Windows
+* Windows (проверено на Windows 10)
 * [.NET 10 SDK](https://dotnet.microsoft.com/download) (проекты используют `net10.0-windows`)
 
 ### Запуск
@@ -74,7 +74,7 @@ dotnet run --project RoundTableApp
 
 ### Талаптар
 
-* Windows
+* Windows (проверено на Windows 10)
 * [.NET 10 SDK](https://dotnet.microsoft.com/download) (жобалар `net10.0-windows` пайдаланады)
 
 ### Іске қосу
