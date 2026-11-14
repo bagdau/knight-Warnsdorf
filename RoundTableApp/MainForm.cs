@@ -25,6 +25,7 @@ public class MainForm : Form
     readonly Panel canvas = new DoubleBufferedPanel();
     readonly NumericUpDown numPeople = new NumericUpDown();
     readonly TextBox txtInfo = new TextBox();
+    readonly Button btnSave = new Button();
 
     class DoubleBufferedPanel : Panel { public DoubleBufferedPanel() { DoubleBuffered = true; } }
 
@@ -85,13 +86,27 @@ public class MainForm : Form
         txtInfo.ForeColor = Color.White;
         txtInfo.BorderStyle = BorderStyle.FixedSingle;
         txtInfo.Font = new Font("Segoe UI", 9.5f);
-        txtInfo.SetBounds(x, 270, w, 370);
+        txtInfo.SetBounds(x, 270, w, 335); // a bit shorter, the save button is below
 
-        Controls.AddRange(new Control[] { canvas, lbl, numPeople, btnRing, btnPath, btnRandom, btnAll, btnClear, hint, txtInfo });
+        btnSave = MakeButton("Нәтижені файлға сақтау", x, 610, w, Color.FromArgb(60, 60, 60));
+        btnSave.Click += (s, e) => SaveReport();
+
+        Controls.AddRange(new Control[] { canvas, lbl, numPeople, btnRing, btnPath, btnRandom, btnAll, btnClear, hint, txtInfo, btnSave });
 
         for (int i = 0; i < n; i++) Link(i, (i + 1) % n); // start with the ring: everything works
         Link(0, 3); Link(2, 6);
         Recompute();
+    }
+
+    void SaveReport()
+    {
+        using var dlg = new SaveFileDialog
+        {
+            Filter = "Text file (*.txt)|*.txt",
+            FileName = "round_table_result.txt"
+        };
+        if (dlg.ShowDialog() == DialogResult.OK)
+            File.WriteAllText(dlg.FileName, txtInfo.Text, Encoding.UTF8);
     }
 
     static Button MakeButton(string text, int x, int y, int w, Color back)
