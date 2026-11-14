@@ -89,7 +89,7 @@ public class KnightTour
         return false;
     }
 
-    // every square once, every step is a knight move, and 64 -> 1 too
+    // every square is used once, every step is a knight move, and the move 64 -> 1 is a knight move too
     public bool Check()
     {
         var seen = new bool[N * N + 1];
